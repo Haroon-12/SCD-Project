@@ -9,8 +9,7 @@ const Order = require('../models/Order');
 const User = require('../models/User');
 const Reservation = require('../models/Reservation');
 require('dotenv').config(); // Add this line
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-console.log('Stripe Key:', process.env.STRIPE_SECRET_KEY);
+
 
 // Menu Routes
 router.get('/menu', async (req, res) => {
@@ -58,26 +57,7 @@ router.post('/add', auth, async (req, res) => {
   }
 });
 
-router.post('/create-payment-intent', async (req, res) => {
-  try {
-    const { amount } = req.body;
 
-    // Create a PaymentIntent with the order amount and currency
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Stripe expects the amount in cents
-      currency: 'usd',
-      metadata: {
-        userId: req.user._id.toString()
-      }
-    });
-
-    res.json({
-      clientSecret: paymentIntent.client_secret
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating payment intent', error: error.message });
-  }
-});
 
 // Update item quantity in cart
 router.put('/update/:itemId',auth, async (req, res) => {
